@@ -1,0 +1,39 @@
+chronos-schedule 1
+program atomicity_violation
+fail ASSERT@atomicity_violation.c:45
+steps 34
+0 0 0 create -1 1
+1 0 1 create -1 3
+2 2 0 start -1 6
+3 2 1 mutex_lock 0 6
+4 2 2 mutex_unlock 0 6
+5 2 3 mutex_lock 1 6
+6 2 4 read -1 6
+7 2 5 mutex_unlock 1 6
+8 2 6 mutex_lock 0 6
+9 2 7 mutex_unlock 0 6
+10 1 0 start -1 6
+11 1 1 mutex_lock 0 6
+12 1 2 mutex_unlock 0 6
+13 1 3 mutex_lock 1 6
+14 1 4 read -1 2
+15 1 5 mutex_unlock 1 2
+16 1 6 mutex_lock 0 6
+17 1 7 mutex_unlock 0 6
+18 1 8 mutex_lock 1 6
+19 1 9 read -1 2
+20 1 10 write -1 2
+21 1 11 mutex_unlock 1 2
+22 1 12 mutex_lock 0 6
+23 1 13 mutex_unlock 0 6
+24 1 14 exit -1 6
+25 0 2 join -1 5
+26 2 8 mutex_lock 1 4
+27 2 9 read -1 4
+28 2 10 write -1 4
+29 2 11 mutex_unlock 1 4
+30 2 12 mutex_lock 0 4
+31 2 13 mutex_unlock 0 4
+32 2 14 exit -1 4
+33 0 3 join -1 1
+end

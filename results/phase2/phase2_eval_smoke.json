@@ -1,0 +1,67 @@
+{
+  "generated_unix": 1792558957.0734458,
+  "host": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "reps": 1,
+  "budget": 20,
+  "timeout": 5,
+  "manifest": "/tmp/chronos_audit/Chronos_Phase1_verified/benchmarks/manifest.json",
+  "note": "Results are only for the listed local manifest cases; external SCTBench results require tools/sctbench.py.",
+  "cases": [
+    {
+      "name": "lost_update",
+      "oracle": "ASSERT@lost_update.c",
+      "runs": [
+        {
+          "rep": 0,
+          "strategy": "random",
+          "heuristic": null,
+          "found": true,
+          "schedules_to_failure_or_budget": 2,
+          "complete": null,
+          "wall_seconds": 0.0444,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "pct",
+          "heuristic": null,
+          "found": true,
+          "schedules_to_failure_or_budget": 11,
+          "complete": null,
+          "wall_seconds": 0.1217,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "dfs",
+          "heuristic": null,
+          "found": false,
+          "schedules_to_failure_or_budget": 20,
+          "complete": false,
+          "wall_seconds": 0.5122,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "dpor",
+          "heuristic": "baseline",
+          "found": false,
+          "schedules_to_failure_or_budget": 20,
+          "complete": false,
+          "wall_seconds": 0.6172,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "dpor",
+          "heuristic": "risk",
+          "found": true,
+          "schedules_to_failure_or_budget": 2,
+          "complete": false,
+          "wall_seconds": 0.0251,
+          "anomalies": 0
+        }
+      ]
+    }
+  ]
+}

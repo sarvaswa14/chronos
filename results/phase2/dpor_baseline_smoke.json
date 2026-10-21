@@ -1,0 +1,19 @@
+{
+ "strategy": "dpor",
+ "schedules": 31,
+ "failures": 1,
+ "first_failure_at": 31,
+ "complete": false,
+ "frontier_remaining": 22,
+ "anomalies": 0,
+ "backtracks": 430,
+ "dependent_pairs": 702,
+ "wall": 0.7435986995697021,
+ "signatures": {
+  "ASSERT@lost_update.c:41": 1
+ },
+ "finding_types": {
+  "RACE": 62
+ },
+ "heuristic": "baseline"
+}

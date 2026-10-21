@@ -1,0 +1,24 @@
+{"chronos_trace":1,"program":"cond_if_not_while","strategy":"replay","seed":1,"threads":4,"steps":22,"objects":[{"id":0,"kind":"mutex","name":"mu"},{"id":1,"kind":"cond","name":"not_empty"}]}
+{"i":0,"t":0,"k":0,"op":"create","o":-1,"a":1,"run":"1","hb":[]}
+{"i":1,"t":1,"k":0,"op":"start","o":-1,"a":0,"run":"3","hb":[0]}
+{"i":2,"t":1,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"3","hb":[],"nm":"mu"}
+{"i":3,"t":1,"k":2,"op":"read","o":-1,"a":0,"run":"3","hb":[],"nm":"count","f":"cond_if_not_while.c","l":18}
+{"i":4,"t":0,"k":1,"op":"create","o":-1,"a":2,"run":"3","hb":[]}
+{"i":5,"t":0,"k":2,"op":"create","o":-1,"a":3,"run":"7","hb":[]}
+{"i":6,"t":3,"k":0,"op":"start","o":-1,"a":0,"run":"e","hb":[5]}
+{"i":7,"t":2,"k":0,"op":"start","o":-1,"a":0,"run":"6","hb":[4]}
+{"i":8,"t":1,"k":3,"op":"cond_wait","o":1,"a":0,"run":"2","hb":[],"nm":"not_empty"}
+{"i":9,"t":3,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"c","hb":[8],"nm":"mu"}
+{"i":10,"t":3,"k":2,"op":"read","o":-1,"a":0,"run":"8","hb":[],"nm":"count","f":"cond_if_not_while.c","l":32}
+{"i":11,"t":3,"k":3,"op":"write","o":-1,"a":0,"run":"8","hb":[],"nm":"count","f":"cond_if_not_while.c","l":33}
+{"i":12,"t":3,"k":4,"op":"cond_signal","o":1,"a":1,"run":"8","hb":[],"nm":"not_empty"}
+{"i":13,"t":3,"k":5,"op":"mutex_unlock","o":0,"a":0,"run":"8","hb":[],"nm":"mu"}
+{"i":14,"t":2,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"e","hb":[13],"nm":"mu"}
+{"i":15,"t":2,"k":2,"op":"read","o":-1,"a":0,"run":"4","hb":[],"nm":"count","f":"cond_if_not_while.c","l":18}
+{"i":16,"t":2,"k":3,"op":"read","o":-1,"a":0,"run":"4","hb":[],"nm":"count","f":"cond_if_not_while.c","l":20}
+{"i":17,"t":2,"k":4,"op":"write","o":-1,"a":0,"run":"4","hb":[],"nm":"count","f":"cond_if_not_while.c","l":22}
+{"i":18,"t":2,"k":5,"op":"mutex_unlock","o":0,"a":0,"run":"4","hb":[],"nm":"mu"}
+{"i":19,"t":1,"k":4,"op":"cond_wake","o":1,"a":12,"run":"e","hb":[12,18],"nm":"not_empty"}
+{"i":20,"t":2,"k":6,"op":"exit","o":-1,"a":0,"run":"6","hb":[]}
+{"i":21,"t":1,"k":5,"op":"read","o":-1,"a":0,"run":"2","hb":[],"nm":"count","f":"cond_if_not_while.c","l":20}
+{"end":1,"result":{"chronos":1,"status":"failure","program":"cond_if_not_while","strategy":"replay","seed":1,"steps":22,"threads":4,"switches":10,"preemptions":5,"failure":{"type":"ASSERT","signature":"ASSERT@cond_if_not_while.c:21","message":"assertion 'c > 0' failed: consumer popped from an empty queue","tid":1,"step":22,"file":"cond_if_not_while.c","line":21},"findings":[]}}

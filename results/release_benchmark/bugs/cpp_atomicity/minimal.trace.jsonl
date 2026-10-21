@@ -1,0 +1,24 @@
+{"chronos_trace":1,"program":"cpp_atomicity","strategy":"replay","seed":1,"threads":3,"steps":22,"objects":[{"id":0,"kind":"mutex","name":"mutex#0"}]}
+{"i":0,"t":0,"k":0,"op":"create","o":-1,"a":1,"run":"1","hb":[]}
+{"i":1,"t":0,"k":1,"op":"create","o":-1,"a":2,"run":"3","hb":[]}
+{"i":2,"t":1,"k":0,"op":"start","o":-1,"a":0,"run":"6","hb":[0]}
+{"i":3,"t":1,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[],"nm":"mutex#0"}
+{"i":4,"t":1,"k":2,"op":"read","o":-1,"a":0,"run":"6","hb":[],"nm":"slots","f":"cpp_atomicity.cpp","l":18}
+{"i":5,"t":1,"k":3,"op":"mutex_unlock","o":0,"a":0,"run":"6","hb":[],"nm":"mutex#0"}
+{"i":6,"t":2,"k":0,"op":"start","o":-1,"a":0,"run":"6","hb":[1]}
+{"i":7,"t":2,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[5],"nm":"mutex#0"}
+{"i":8,"t":2,"k":2,"op":"read","o":-1,"a":0,"run":"4","hb":[],"nm":"slots","f":"cpp_atomicity.cpp","l":18}
+{"i":9,"t":2,"k":3,"op":"mutex_unlock","o":0,"a":0,"run":"4","hb":[],"nm":"mutex#0"}
+{"i":10,"t":2,"k":4,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[9],"nm":"mutex#0"}
+{"i":11,"t":2,"k":5,"op":"read","o":-1,"a":0,"run":"4","hb":[],"nm":"slots","f":"cpp_atomicity.cpp","l":22}
+{"i":12,"t":2,"k":6,"op":"write","o":-1,"a":0,"run":"4","hb":[],"nm":"slots","f":"cpp_atomicity.cpp","l":23}
+{"i":13,"t":2,"k":7,"op":"mutex_unlock","o":0,"a":0,"run":"4","hb":[],"nm":"mutex#0"}
+{"i":14,"t":2,"k":8,"op":"exit","o":-1,"a":0,"run":"6","hb":[]}
+{"i":15,"t":1,"k":4,"op":"mutex_lock","o":0,"a":0,"run":"2","hb":[13],"nm":"mutex#0"}
+{"i":16,"t":1,"k":5,"op":"read","o":-1,"a":0,"run":"2","hb":[],"nm":"slots","f":"cpp_atomicity.cpp","l":22}
+{"i":17,"t":1,"k":6,"op":"write","o":-1,"a":0,"run":"2","hb":[],"nm":"slots","f":"cpp_atomicity.cpp","l":23}
+{"i":18,"t":1,"k":7,"op":"mutex_unlock","o":0,"a":0,"run":"2","hb":[],"nm":"mutex#0"}
+{"i":19,"t":1,"k":8,"op":"exit","o":-1,"a":0,"run":"2","hb":[]}
+{"i":20,"t":0,"k":2,"op":"join","o":-1,"a":1,"run":"1","hb":[19]}
+{"i":21,"t":0,"k":3,"op":"join","o":-1,"a":2,"run":"1","hb":[14]}
+{"end":1,"result":{"chronos":1,"status":"failure","program":"cpp_atomicity","strategy":"replay","seed":1,"steps":22,"threads":3,"switches":4,"preemptions":1,"failure":{"type":"ASSERT","signature":"ASSERT@cpp_atomicity.cpp:32","message":"assertion 'granted <= 1' failed: slot granted twice","tid":0,"step":22,"file":"cpp_atomicity.cpp","line":32},"findings":[]}}

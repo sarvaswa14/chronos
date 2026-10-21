@@ -1,0 +1,27 @@
+chronos-schedule 1
+program cpp_atomicity
+fail ASSERT@cpp_atomicity.cpp:32
+steps 22
+0 0 0 create -1 1
+1 1 0 start -1 3
+2 0 1 create -1 3
+3 2 0 start -1 6
+4 1 1 mutex_lock 0 6
+5 1 2 read -1 2
+6 1 3 mutex_unlock 0 2
+7 2 1 mutex_lock 0 6
+8 2 2 read -1 4
+9 2 3 mutex_unlock 0 4
+10 1 4 mutex_lock 0 6
+11 1 5 read -1 2
+12 1 6 write -1 2
+13 1 7 mutex_unlock 0 2
+14 2 4 mutex_lock 0 6
+15 1 8 exit -1 6
+16 0 2 join -1 5
+17 2 5 read -1 4
+18 2 6 write -1 4
+19 2 7 mutex_unlock 0 4
+20 2 8 exit -1 4
+21 0 3 join -1 1
+end

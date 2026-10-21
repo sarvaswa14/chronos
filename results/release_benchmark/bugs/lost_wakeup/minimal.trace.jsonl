@@ -1,0 +1,13 @@
+{"chronos_trace":1,"program":"lost_wakeup","strategy":"replay","seed":1,"threads":3,"steps":11,"objects":[{"id":0,"kind":"mutex","name":"mu"},{"id":1,"kind":"cond","name":"cv"}]}
+{"i":0,"t":0,"k":0,"op":"create","o":-1,"a":1,"run":"1","hb":[]}
+{"i":1,"t":0,"k":1,"op":"create","o":-1,"a":2,"run":"3","hb":[]}
+{"i":2,"t":2,"k":0,"op":"start","o":-1,"a":0,"run":"6","hb":[1]}
+{"i":3,"t":2,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[],"nm":"mu"}
+{"i":4,"t":2,"k":2,"op":"write","o":-1,"a":0,"run":"6","hb":[],"nm":"data","f":"lost_wakeup.c","l":25}
+{"i":5,"t":2,"k":3,"op":"cond_signal","o":1,"a":-1,"run":"6","hb":[],"nm":"cv"}
+{"i":6,"t":2,"k":4,"op":"mutex_unlock","o":0,"a":0,"run":"6","hb":[],"nm":"mu"}
+{"i":7,"t":2,"k":5,"op":"exit","o":-1,"a":0,"run":"6","hb":[]}
+{"i":8,"t":1,"k":0,"op":"start","o":-1,"a":0,"run":"2","hb":[0]}
+{"i":9,"t":1,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"2","hb":[6],"nm":"mu"}
+{"i":10,"t":1,"k":2,"op":"cond_wait","o":1,"a":0,"run":"2","hb":[],"nm":"cv"}
+{"end":1,"result":{"chronos":1,"status":"failure","program":"lost_wakeup","strategy":"replay","seed":1,"steps":11,"threads":3,"switches":2,"preemptions":0,"failure":{"type":"DEADLOCK","signature":"DEADLOCK[cond_wait,join]","message":"no runnable thread; blocked: t0:join() t1:cond_wait(cv)","tid":1,"step":11,"file":"","line":0},"findings":[]}}

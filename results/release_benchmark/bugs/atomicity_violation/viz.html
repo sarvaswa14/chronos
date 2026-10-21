@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chronos - atomicity_violation</title>
+<style>
+:root{
+  --bg:#f7f8fa; --panel:#ffffff; --ink:#1b2430; --muted:#5d6b7c; --line:#d8dee6; --accent:#2457d6;
+  --bad:#c62828; --good:#1b7f3b; --warn:#b26a00; --ready:rgba(36,87,214,.10); --blk:rgba(178,106,0,.22);
+  --c-life:#7a8696; --c-lock:#2e7d32; --c-cond:#6a1b9a; --c-sem:#00838f; --c-bar:#ad1457;
+  --c-once:#5d4037; --c-mem:#1565c0; --c-atom:#ef6c00; --c-yield:#9e9e9e; --hb:#2457d6;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0f141a; --panel:#171e27; --ink:#e6ebf1; --muted:#9aa7b6; --line:#2a3441; --accent:#6c9bff;
+  --bad:#ff6b6b; --good:#5bd17f; --warn:#ffb74d; --ready:rgba(108,155,255,.14); --blk:rgba(255,183,77,.22);
+  --c-life:#8f9bab; --c-lock:#66bb6a; --c-cond:#ba68c8; --c-sem:#26c6da; --c-bar:#f06292;
+  --c-once:#a1887f; --c-mem:#64b5f6; --c-atom:#ffa726; --c-yield:#bdbdbd; --hb:#6c9bff;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:14px 16px 6px}
+h1{font-size:18px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:12.5px}
+.tabs{display:flex;gap:6px;padding:6px 16px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px}
+.tab[aria-selected=true]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.chips{display:flex;gap:8px;flex-wrap:wrap;padding:4px 16px 8px}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12.5px}
+.chip b{font-weight:600}
+.chip.bad{border-color:var(--bad);color:var(--bad)} .chip.good{border-color:var(--good);color:var(--good)} .chip.warn{border-color:var(--warn);color:var(--warn)}
+section{margin:8px 16px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+section>h2{font-size:13px;margin:0;padding:8px 12px;border-bottom:1px solid var(--line);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.pad{padding:10px 12px}
+#minimap{display:flex;height:16px;gap:1px;padding:8px 12px 10px;cursor:pointer}
+#minimap i{flex:1;min-width:1px;display:block;border-radius:1px}
+#tlwrap{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+svg text{font-family:inherit}
+.ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 12px;border-top:1px solid var(--line)}
+.ctrl label{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:4px}
+button.b{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:4px 10px;cursor:pointer}
+input[type=range]{flex:1;min-width:140px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+.st{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line)}
+.st.run{background:var(--good);color:#fff;border-color:var(--good)} .st.ready{background:var(--ready)} .st.blk{background:var(--blk)}
+.st.done{color:var(--muted)}
+.find{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);padding:8px 12px;cursor:pointer;font:inherit}
+.find:hover{background:var(--ready)}
+.find .k{font-weight:600;margin-right:6px}
+.find.RACE .k,.find.ASSERT .k,.find.DEADLOCK .k,.find.CRASH .k,.find.MISUSE .k,.find.HANG .k,.find.STEP_LIMIT .k,.find.UNSUPPORTED .k{color:var(--bad)}
+.find.LOCKORDER .k{color:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);padding:8px 12px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:14px;height:12px;border-radius:3px;display:inline-block}
+#tip{position:fixed;pointer-events:none;background:#111;color:#fff;font-size:12px;padding:5px 8px;border-radius:6px;display:none;z-index:9;max-width:320px}
+.empty{color:var(--muted);padding:10px 12px}
+@media(max-width:640px){header{padding:10px 10px 4px}section{margin:8px 8px}.tabs,.chips{padding-left:10px;padding-right:10px}}
+</style></head>
+<body>
+<header><h1 id="ttl"></h1><div class="sub" id="sub"></div></header>
+<div class="tabs" id="tabs" role="tablist"></div>
+<div class="chips" id="chips"></div>
+<section><h2>Schedule overview <span style="text-transform:none;font-weight:400">(each cell = one scheduling step, colour = thread; click to jump)</span></h2><div id="minimap" aria-label="schedule overview"></div></section>
+<section><h2>Execution timeline</h2>
+  <div id="tlwrap"><svg id="tl" role="img" aria-label="execution timeline"></svg></div>
+  <div class="ctrl">
+    <button class="b" id="prev" aria-label="previous step">◀</button>
+    <input type="range" id="scrub" min="0" max="0" value="0" aria-label="step">
+    <button class="b" id="next" aria-label="next step">▶</button>
+    <span id="stepno" class="sub"></span>
+  </div>
+  <div class="ctrl">
+    <label><input type="checkbox" id="fHB" checked> happens-before edges</label>
+    <label><input type="checkbox" id="fSW" checked> context switches</label>
+    <label><input type="checkbox" id="fST" checked> runnable / blocked shading</label>
+    <label><input type="checkbox" id="fLife" checked> thread lifecycle</label>
+  </div>
+  <div class="legend" id="legend"></div>
+</section>
+<section><h2>Selected step</h2><div class="pad" id="detail"></div></section>
+<section><h2>Thread state at this step</h2><div class="pad" id="threads"></div></section>
+<section><h2>Findings &amp; failure</h2><div id="finds"></div></section>
+<div id="tip"></div>
+<script id="data" type="application/json">{"title":"Chronos - atomicity_violation","traces":[{"header":{"chronos_trace":1,"program":"atomicity_violation","strategy":"replay","seed":1,"threads":3,"steps":34,"objects":[{"id":0,"kind":"mutex","name":"audit_mu"},{"id":1,"kind":"mutex","name":"balance_mu"}]},"events":[{"i":0,"t":0,"k":0,"op":"create","o":-1,"a":1,"run":"1","hb":[]},{"i":1,"t":1,"k":0,"op":"start","o":-1,"a":0,"run":"3","hb":[0]},{"i":2,"t":0,"k":1,"op":"create","o":-1,"a":2,"run":"3","hb":[]},{"i":3,"t":2,"k":0,"op":"start","o":-1,"a":0,"run":"6","hb":[2]},{"i":4,"t":2,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[],"nm":"audit_mu"},{"i":5,"t":2,"k":2,"op":"mutex_unlock","o":0,"a":0,"run":"4","hb":[],"nm":"audit_mu"},{"i":6,"t":2,"k":3,"op":"mutex_lock","o":1,"a":0,"run":"6","hb":[],"nm":"balance_mu"},{"i":7,"t":2,"k":4,"op":"read","o":-1,"a":0,"run":"6","hb":[],"nm":"balance","f":"atomicity_violation.c","l":24},{"i":8,"t":2,"k":5,"op":"mutex_unlock","o":1,"a":0,"run":"6","hb":[],"nm":"balance_mu"},{"i":9,"t":2,"k":6,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[5],"nm":"audit_mu"},{"i":10,"t":2,"k":7,"op":"mutex_unlock","o":0,"a":0,"run":"4","hb":[],"nm":"audit_mu"},{"i":11,"t":1,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[10],"nm":"audit_mu"},{"i":12,"t":1,"k":2,"op":"mutex_unlock","o":0,"a":0,"run":"6","hb":[],"nm":"audit_mu"},{"i":13,"t":1,"k":3,"op":"mutex_lock","o":1,"a":0,"run":"6","hb":[8],"nm":"balance_mu"},{"i":14,"t":1,"k":4,"op":"read","o":-1,"a":0,"run":"2","hb":[],"nm":"balance","f":"atomicity_violation.c","l":24},{"i":15,"t":1,"k":5,"op":"mutex_unlock","o":1,"a":0,"run":"2","hb":[],"nm":"balance_mu"},{"i":16,"t":2,"k":8,"op":"mutex_lock","o":1,"a":0,"run":"6","hb":[15],"nm":"balance_mu"},{"i":17,"t":2,"k":9,"op":"read","o":-1,"a":0,"run":"6","hb":[],"nm":"balance","f":"atomicity_violation.c","l":29},{"i":18,"t":2,"k":10,"op":"write","o":-1,"a":0,"run":"6","hb":[],"nm":"balance","f":"atomicity_violation.c","l":30},{"i":19,"t":1,"k":6,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[12],"nm":"audit_mu"},{"i":20,"t":1,"k":7,"op":"mutex_unlock","o":0,"a":0,"run":"6","hb":[],"nm":"audit_mu"},{"i":21,"t":2,"k":11,"op":"mutex_unlock","o":1,"a":0,"run":"4","hb":[],"nm":"balance_mu"},{"i":22,"t":2,"k":12,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[20],"nm":"audit_mu"},{"i":23,"t":1,"k":8,"op":"mutex_lock","o":1,"a":0,"run":"6","hb":[21],"nm":"balance_mu"},{"i":24,"t":1,"k":9,"op":"read","o":-1,"a":0,"run":"6","hb":[],"nm":"balance","f":"atomicity_violation.c","l":29},{"i":25,"t":2,"k":13,"op":"mutex_unlock","o":0,"a":0,"run":"6","hb":[],"nm":"audit_mu"},{"i":26,"t":1,"k":10,"op":"write","o":-1,"a":0,"run":"6","hb":[],"nm":"balance","f":"atomicity_violation.c","l":30},{"i":27,"t":1,"k":11,"op":"mutex_unlock","o":1,"a":0,"run":"6","hb":[],"nm":"balance_mu"},{"i":28,"t":2,"k":14,"op":"exit","o":-1,"a":0,"run":"6","hb":[]},{"i":29,"t":1,"k":12,"op":"mutex_lock","o":0,"a":0,"run":"2","hb":[25],"nm":"audit_mu"},{"i":30,"t":1,"k":13,"op":"mutex_unlock","o":0,"a":0,"run":"2","hb":[],"nm":"audit_mu"},{"i":31,"t":1,"k":14,"op":"exit","o":-1,"a":0,"run":"2","hb":[]},{"i":32,"t":0,"k":2,"op":"join","o":-1,"a":1,"run":"1","hb":[31]},{"i":33,"t":0,"k":3,"op":"join","o":-1,"a":2,"run":"1","hb":[28]}],"result":{"chronos":1,"status":"failure","program":"atomicity_violation","strategy":"replay","seed":1,"steps":34,"threads":3,"switches":13,"preemptions":9,"failure":{"type":"ASSERT","signature":"ASSERT@atomicity_violation.c:45","message":"assertion 'balance >= 0' failed: balance went negative (double withdrawal)","tid":0,"step":34,"file":"atomicity_violation.c","line":45},"findings":[]},"label":"original failing run"},{"header":{"chronos_trace":1,"program":"atomicity_violation","strategy":"replay","seed":1,"threads":3,"steps":34,"objects":[{"id":0,"kind":"mutex","name":"audit_mu"},{"id":1,"kind":"mutex","name":"balance_mu"}]},"events":[{"i":0,"t":0,"k":0,"op":"create","o":-1,"a":1,"run":"1","hb":[]},{"i":1,"t":0,"k":1,"op":"create","o":-1,"a":2,"run":"3","hb":[]},{"i":2,"t":2,"k":0,"op":"start","o":-1,"a":0,"run":"6","hb":[1]},{"i":3,"t":2,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[],"nm":"audit_mu"},{"i":4,"t":2,"k":2,"op":"mutex_unlock","o":0,"a":0,"run":"6","hb":[],"nm":"audit_mu"},{"i":5,"t":2,"k":3,"op":"mutex_lock","o":1,"a":0,"run":"6","hb":[],"nm":"balance_mu"},{"i":6,"t":2,"k":4,"op":"read","o":-1,"a":0,"run":"6","hb":[],"nm":"balance","f":"atomicity_violation.c","l":24},{"i":7,"t":2,"k":5,"op":"mutex_unlock","o":1,"a":0,"run":"6","hb":[],"nm":"balance_mu"},{"i":8,"t":2,"k":6,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[4],"nm":"audit_mu"},{"i":9,"t":2,"k":7,"op":"mutex_unlock","o":0,"a":0,"run":"6","hb":[],"nm":"audit_mu"},{"i":10,"t":1,"k":0,"op":"start","o":-1,"a":0,"run":"6","hb":[0]},{"i":11,"t":1,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[9],"nm":"audit_mu"},{"i":12,"t":1,"k":2,"op":"mutex_unlock","o":0,"a":0,"run":"6","hb":[],"nm":"audit_mu"},{"i":13,"t":1,"k":3,"op":"mutex_lock","o":1,"a":0,"run":"6","hb":[7],"nm":"balance_mu"},{"i":14,"t":1,"k":4,"op":"read","o":-1,"a":0,"run":"2","hb":[],"nm":"balance","f":"atomicity_violation.c","l":24},{"i":15,"t":1,"k":5,"op":"mutex_unlock","o":1,"a":0,"run":"2","hb":[],"nm":"balance_mu"},{"i":16,"t":1,"k":6,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[12],"nm":"audit_mu"},{"i":17,"t":1,"k":7,"op":"mutex_unlock","o":0,"a":0,"run":"6","hb":[],"nm":"audit_mu"},{"i":18,"t":1,"k":8,"op":"mutex_lock","o":1,"a":0,"run":"6","hb":[15],"nm":"balance_mu"},{"i":19,"t":1,"k":9,"op":"read","o":-1,"a":0,"run":"2","hb":[],"nm":"balance","f":"atomicity_violation.c","l":29},{"i":20,"t":1,"k":10,"op":"write","o":-1,"a":0,"run":"2","hb":[],"nm":"balance","f":"atomicity_violation.c","l":30},{"i":21,"t":1,"k":11,"op":"mutex_unlock","o":1,"a":0,"run":"2","hb":[],"nm":"balance_mu"},{"i":22,"t":1,"k":12,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[17],"nm":"audit_mu"},{"i":23,"t":1,"k":13,"op":"mutex_unlock","o":0,"a":0,"run":"6","hb":[],"nm":"audit_mu"},{"i":24,"t":1,"k":14,"op":"exit","o":-1,"a":0,"run":"6","hb":[]},{"i":25,"t":0,"k":2,"op":"join","o":-1,"a":1,"run":"5","hb":[24]},{"i":26,"t":2,"k":8,"op":"mutex_lock","o":1,"a":0,"run":"4","hb":[21],"nm":"balance_mu"},{"i":27,"t":2,"k":9,"op":"read","o":-1,"a":0,"run":"4","hb":[],"nm":"balance","f":"atomicity_violation.c","l":29},{"i":28,"t":2,"k":10,"op":"write","o":-1,"a":0,"run":"4","hb":[],"nm":"balance","f":"atomicity_violation.c","l":30},{"i":29,"t":2,"k":11,"op":"mutex_unlock","o":1,"a":0,"run":"4","hb":[],"nm":"balance_mu"},{"i":30,"t":2,"k":12,"op":"mutex_lock","o":0,"a":0,"run":"4","hb":[23],"nm":"audit_mu"},{"i":31,"t":2,"k":13,"op":"mutex_unlock","o":0,"a":0,"run":"4","hb":[],"nm":"audit_mu"},{"i":32,"t":2,"k":14,"op":"exit","o":-1,"a":0,"run":"4","hb":[]},{"i":33,"t":0,"k":3,"op":"join","o":-1,"a":2,"run":"1","hb":[32]}],"result":{"chronos":1,"status":"failure","program":"atomicity_violation","strategy":"replay","seed":1,"steps":34,"threads":3,"switches":5,"preemptions":1,"failure":{"type":"ASSERT","signature":"ASSERT@atomicity_violation.c:45","message":"assertion 'balance >= 0' failed: balance went negative (double withdrawal)","tid":0,"step":34,"file":"atomicity_violation.c","line":45},"findings":[]},"label":"minimized schedule"}]}</script>
+<script>
+(function(){
+"use strict";
+const DATA = JSON.parse(document.getElementById('data').textContent);
+const CAT = {start:'life',exit:'life',create:'life',join:'life',mutex_lock:'lock',mutex_trylock:'lock',mutex_unlock:'lock',
+  cond_wait:'cond',cond_wake:'cond',cond_signal:'cond',cond_broadcast:'cond',sem_wait:'sem',sem_trywait:'sem',sem_post:'sem',
+  barrier_wait:'bar',barrier_leave:'bar',once:'once',read:'mem',write:'mem',atomic_load:'atom',atomic_store:'atom',atomic_rmw:'atom',yield:'yield'};
+const GLYPH = {start:'▶',exit:'■',create:'+',join:'⋈',mutex_lock:'L',mutex_trylock:'L?',mutex_unlock:'U',cond_wait:'⏸',cond_wake:'⏵',
+  cond_signal:'S',cond_broadcast:'B',sem_wait:'P',sem_trywait:'P?',sem_post:'V',barrier_wait:'▮',barrier_leave:'▮',once:'1',
+  read:'R',write:'W',atomic_load:'aR',atomic_store:'aW',atomic_rmw:'a±',yield:'y'};
+const CATNAME = {life:'thread lifecycle',lock:'mutex',cond:'condition variable',sem:'semaphore',bar:'barrier',once:'once',mem:'annotated read/write',atom:'atomic',yield:'yield / sleep'};
+const TCOL = ['#2457d6','#d84315','#2e7d32','#8e24aa','#00838f','#c2185b','#6d4c41','#546e7a','#f9a825','#455a64'];
+const CW=28, LH=46, LEFT=64, TOP=30;
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+let cur = 0, sel = 0;
+
+function el(tag, attrs, parent, text){
+  const e = document.createElementNS(NS, tag);
+  for (const k in (attrs||{})) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function tcol(t){ return TCOL[t % TCOL.length]; }
+function objName(T, id){ if (id < 0) return ''; const o = T.header.objects[id]; return o ? o.name : ('obj#'+id); }
+function hasBit(hex, t){ // runnable set is a hex string up to 64 bits
+  const idx = hex.length - 1 - Math.floor(t/4); if (idx < 0) return false;
+  return ((parseInt(hex[idx],16) >> (t%4)) & 1) === 1;
+}
+function label(T, e){
+  const nm = e.nm ? e.nm : objName(T, e.o);
+  return e.op + (nm ? ' ' + nm : '');
+}
+
+function tabs(){
+  const box = $('tabs'); box.innerHTML = '';
+  DATA.traces.forEach((t,i)=>{
+    const b = document.createElement('button');
+    b.className = 'tab'; b.setAttribute('role','tab'); b.setAttribute('aria-selected', i===cur);
+    const r = t.result || {};
+    const st = r.status === 'failure' ? '✖ ' + (r.failure ? r.failure.signature : 'failure') : (r.status === 'ok' ? '✔ ok' : (r.status||''));
+    b.textContent = t.label + ' — ' + st + ' (' + (r.steps||t.events.length) + ' steps, ' + (r.switches||0) + ' switches)';
+    b.onclick = ()=>{ cur = i; sel = 0; render(); };
+    box.appendChild(b);
+  });
+  box.style.display = DATA.traces.length > 1 ? 'flex' : 'none';
+}
+
+function chips(T){
+  const r = T.result || {}, h = T.header;
+  const c = $('chips'); c.innerHTML = '';
+  function chip(txt, cls){ const d = document.createElement('span'); d.className = 'chip ' + (cls||''); d.innerHTML = txt; c.appendChild(d); }
+  if (r.status === 'failure') chip('<b>FAILURE</b> ' + esc(r.failure.signature), 'bad');
+  else if (r.status === 'divergence') chip('<b>DIVERGENCE</b> at step ' + r.divergence.step, 'bad');
+  else chip('<b>OK</b> no failure', 'good');
+  chip('<b>' + h.steps + '</b> steps'); chip('<b>' + h.threads + '</b> threads');
+  chip('<b>' + (r.switches||0) + '</b> context switches'); chip('<b>' + (r.preemptions||0) + '</b> preemptions');
+  const nf = (r.findings||[]).length; chip('<b>' + nf + '</b> detector finding' + (nf===1?'':'s'), nf ? 'warn' : '');
+  chip('strategy <b>' + esc(h.strategy) + '</b>' + (h.strategy==='random'||h.strategy==='pct' ? ' seed <b>' + h.seed + '</b>' : ''));
+}
+
+function threadRanges(T){
+  const n = T.header.threads, ev = T.events;
+  const first = new Array(n).fill(-1), last = new Array(n).fill(ev.length-1);
+  first[0] = 0;
+  ev.forEach((e,i)=>{ if (first[e.t] < 0) first[e.t] = i; if (e.op === 'exit') last[e.t] = i; });
+  return {first, last};
+}
+
+function drawTimeline(T){
+  const n = T.header.threads, ev = T.events, N = ev.length;
+  const W = LEFT + N*CW + 40, H = TOP + n*LH + 24;
+  const svg = $('tl'); svg.innerHTML = '';
+  svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('viewBox', '0 0 '+W+' '+H);
+  const x = i => LEFT + i*CW, y = t => TOP + t*LH;
+  const defs = el('defs', {}, svg);
+  const pat = el('pattern', {id:'hatch', width:6, height:6, patternUnits:'userSpaceOnUse', patternTransform:'rotate(45)'}, defs);
+  el('rect', {width:6, height:6, fill:'var(--blk)'}, pat); el('line', {x1:0,y1:0,x2:0,y2:6, stroke:'var(--warn)', 'stroke-width':1.4, opacity:.55}, pat);
+  const mk = el('marker', {id:'arr', viewBox:'0 0 8 8', refX:7, refY:4, markerWidth:6, markerHeight:6, orient:'auto'}, defs);
+  el('path', {d:'M0,0 L8,4 L0,8 z', fill:'var(--hb)'}, mk);
+  const rng = threadRanges(T);
+  // axis
+  for (let i=0;i<N;i+= (N>80?10:5)) el('text', {x:x(i)+CW/2, y:TOP-10, 'text-anchor':'middle', 'font-size':10, fill:'var(--muted)'}, svg, i);
+  // lanes + labels
+  for (let t=0;t<n;t++){
+    el('rect', {x:0, y:y(t), width:W, height:LH, fill: t%2? 'transparent':'rgba(127,127,127,.05)'}, svg);
+    el('text', {x:8, y:y(t)+LH/2+4, 'font-size':12, 'font-weight':600, fill:tcol(t)}, svg, 'T'+t+(t===0?' main':''));
+  }
+  // runnable / blocked shading
+  const gShade = el('g', {id:'gShade'}, svg);
+  for (let i=0;i<N;i++) for (let t=0;t<n;t++){
+    if (t === ev[i].t) continue;
+    if (rng.first[t] < 0 || i < rng.first[t] || i > rng.last[t]) continue;
+    const r = hasBit(ev[i].run, t);
+    el('rect', {x:x(i), y:y(t)+6, width:CW, height:LH-12, fill: r ? 'var(--ready)' : 'url(#hatch)'}, gShade);
+  }
+  // context switches
+  const gSw = el('g', {id:'gSw'}, svg);
+  for (let i=1;i<N;i++){
+    if (ev[i].t === ev[i-1].t) continue;
+    const pre = hasBit(ev[i].run, ev[i-1].t);
+    el('line', {x1:x(i), x2:x(i), y1:TOP-2, y2:TOP+n*LH, stroke: pre ? 'var(--bad)' : 'var(--muted)', 'stroke-width':1, 'stroke-dasharray': pre ? '4 3' : '1 3', opacity: pre? .75 : .5}, gSw);
+  }
+  // happens-before edges
+  const gHB = el('g', {id:'gHB'}, svg);
+  ev.forEach((e,i)=>{ (e.hb||[]).forEach(s=>{
+    const a = ev[s]; if (!a || a.t === e.t) return;
+    const x1 = x(s)+CW/2, y1 = y(a.t)+LH/2, x2 = x(i)+CW/2, y2 = y(e.t)+LH/2, mx = (x1+x2)/2;
+    el('path', {d:'M'+x1+','+y1+' C'+mx+','+y1+' '+mx+','+y2+' '+x2+','+y2, fill:'none', stroke:'var(--hb)', 'stroke-width':1.2, opacity:.55, 'marker-end':'url(#arr)', 'data-a':s, 'data-b':i}, gHB);
+  }); });
+  // race connectors
+  const races = ((T.result||{}).findings||[]).filter(f=>f.type==='RACE');
+  const raceSteps = new Set();
+  races.forEach(f=>{
+    const a = f.a, b = f.b; raceSteps.add(a.step); raceSteps.add(b.step);
+    el('path', {d:'M'+(x(a.step)+CW/2)+','+(y(a.tid)+LH/2)+' L'+(x(b.step)+CW/2)+','+(y(b.tid)+LH/2), stroke:'var(--bad)', 'stroke-width':2, 'stroke-dasharray':'5 4', fill:'none'}, svg);
+  });
+  // events
+  const gEv = el('g', {id:'gEv'}, svg);
+  ev.forEach((e,i)=>{
+    const c = CAT[e.op] || 'yield';
+    const g = el('g', {'data-i':i, 'data-cat':c, style:'cursor:pointer'}, gEv);
+    const rx = x(i)+2, ry = y(e.t)+11;
+    el('rect', {x:rx, y:ry, width:CW-4, height:LH-22, rx:5, fill:'var(--c-'+c+')', stroke: raceSteps.has(i) ? 'var(--bad)' : 'rgba(0,0,0,.25)', 'stroke-width': raceSteps.has(i) ? 3 : 1}, g);
+    el('text', {x:x(i)+CW/2, y:ry+(LH-22)/2+4, 'text-anchor':'middle', 'font-size':11, 'font-weight':700, fill:'#fff', 'pointer-events':'none'}, g, GLYPH[e.op] || '?');
+    g.addEventListener('click', ()=>select(i));
+    g.addEventListener('mousemove', ev2=>tip(ev2, 'step '+i+' · T'+e.t+' · '+label(T,e)+(e.f?' · '+e.f+':'+e.l:'')));
+    g.addEventListener('mouseleave', ()=>{ $('tip').style.display='none'; });
+  });
+  // failure marker
+  const r = T.result || {};
+  if (r.status === 'failure' && r.failure){
+    const fi = Math.max(0, Math.min(N-1, (r.failure.step||N)-1));
+    const ft = (r.failure.type === 'ASSERT' || r.failure.type === 'RACE' || r.failure.type==='CRASH') && r.failure.tid >= 0 ? r.failure.tid : (N? ev[N-1].t : 0);
+    el('text', {x:x(r.failure.type==='RACE' ? fi : (fi+1)) + (r.failure.type==='RACE'?CW/2:4), y:y(ft)+14, 'font-size':16, fill:'var(--bad)', 'font-weight':700, 'text-anchor': r.failure.type==='RACE' ? 'middle':'start'}, svg, '✖');
+    if (r.failure.type === 'DEADLOCK'){
+      el('line', {x1:x(N)+6, x2:x(N)+6, y1:TOP-4, y2:TOP+n*LH, stroke:'var(--bad)', 'stroke-width':3}, svg);
+      el('text', {x:x(N)+10, y:TOP+14, 'font-size':11, fill:'var(--bad)', 'font-weight':700}, svg, 'deadlock');
+    }
+  }
+  // cursor
+  el('rect', {id:'cursor', x:x(0), y:TOP-2, width:CW, height:n*LH+2, fill:'none', stroke:'var(--accent)', 'stroke-width':2, rx:4, 'pointer-events':'none'}, svg);
+  applyFilters();
+}
+
+function applyFilters(){
+  const show = (id, on) => { const g = $(id); if (g) g.style.display = on ? '' : 'none'; };
+  show('gHB', $('fHB').checked); show('gSw', $('fSW').checked); show('gShade', $('fST').checked);
+  document.querySelectorAll('#gEv g[data-cat=life]').forEach(g => g.style.display = $('fLife').checked ? '' : 'none');
+}
+
+function tip(ev, text){ const t = $('tip'); t.textContent = text; t.style.display = 'block'; t.style.left = Math.min(window.innerWidth-330, ev.clientX+12)+'px'; t.style.top = (ev.clientY+14)+'px'; }
+
+function minimap(T){
+  const m = $('minimap'); m.innerHTML = '';
+  T.events.forEach((e,i)=>{ const d = document.createElement('i'); d.style.background = tcol(e.t); d.title = 'step '+i+' · T'+e.t+' · '+e.op; d.onclick = ()=>select(i); m.appendChild(d); });
+}
+
+function stateAt(T, i){
+  const n = T.header.threads, ev = T.events, rng = threadRanges(T);
+  const held = Array.from({length:n}, ()=>[]), lastOp = new Array(n).fill(''), condMutex = new Array(n).fill(-1);
+  const rm = (t,o)=>{ const k = held[t].lastIndexOf(o); if (k>=0) held[t].splice(k,1); };
+  for (let k=0;k<=i && k<ev.length;k++){
+    const e = ev[k], t = e.t; lastOp[t] = label(T,e) + ' (step '+k+')';
+    if (e.op==='mutex_lock' || (e.op==='mutex_trylock' && e.a===0)) held[t].push(e.o);
+    else if (e.op==='mutex_unlock') rm(t,e.o);
+    else if (e.op==='cond_wait'){ condMutex[t] = e.a; rm(t, e.a); }
+    else if (e.op==='cond_wake'){ if (condMutex[t] >= 0) held[t].push(condMutex[t]); }
+  }
+  const e = ev[i], rows = [];
+  for (let t=0;t<n;t++){
+    let st, cls;
+    if (rng.first[t] < 0 || i < rng.first[t]) { st = 'not started'; cls = 'done'; }
+    else if (t === e.t) { st = 'running (this step)'; cls = 'run'; }
+    else if (ev[rng.last[t]] && ev[rng.last[t]].op==='exit' && i >= rng.last[t]) { st = 'finished'; cls = 'done'; }
+    else if (hasBit(e.run, t)) { st = 'ready (preempted)'; cls = 'ready'; }
+    else { st = 'blocked'; cls = 'blk'; }
+    rows.push({t, st, cls, held: held[t].map(o=>objName(T,o)), last: lastOp[t]});
+  }
+  return rows;
+}
+
+function detail(T, i){
+  const e = T.events[i]; if (!e) { $('detail').innerHTML = '<div class="empty">No steps recorded.</div>'; return; }
+  const run = []; for (let t=0;t<T.header.threads;t++) if (hasBit(e.run,t)) run.push('T'+t);
+  const hb = (e.hb||[]).map(s=>'step '+s+' (T'+T.events[s].t+' '+T.events[s].op+')').join(', ') || '—';
+  const nm = e.nm ? e.nm : objName(T,e.o);
+  let extra = '';
+  if (e.op==='create') extra = 'creates T'+e.a; else if (e.op==='join') extra = 'joins T'+e.a;
+  else if (e.op==='cond_signal') extra = e.a>=0 ? 'wakes T'+e.a : 'no waiter — signal is lost';
+  else if (e.op==='cond_broadcast') extra = 'wakes '+e.a+' waiter(s)';
+  else if (e.op==='cond_wait') extra = 'releases '+objName(T,e.a);
+  else if (e.op==='cond_wake') extra = e.a>=0 ? 'signalled at step '+e.a : 'spurious wake-up (injected)';
+  else if (e.op==='mutex_trylock') extra = e.a===0 ? 'acquired' : 'EBUSY (not acquired)';
+  else if (e.op==='sem_trywait') extra = e.a===0 ? 'acquired' : 'EAGAIN';
+  $('detail').innerHTML = '<table><tr><th>step</th><td>'+i+' of '+(T.events.length-1)+'</td><th>thread</th><td style="color:'+tcol(e.t)+';font-weight:600">T'+e.t+'</td><th>op # in thread</th><td>'+e.k+'</td></tr>'
+   + '<tr><th>operation</th><td><code>'+esc(e.op)+'</code></td><th>object / variable</th><td><code>'+esc(nm || '—')+'</code></td><th>source</th><td><code>'+(e.f ? esc(e.f)+':'+e.l : '—')+'</code></td></tr>'
+   + '<tr><th>runnable set</th><td colspan="2">'+run.join(', ')+'</td><th>happens-after</th><td colspan="2">'+esc(hb)+'</td></tr>'
+   + (extra ? '<tr><th>effect</th><td colspan="5">'+esc(extra)+'</td></tr>' : '') + '</table>';
+}
+
+function threadsPanel(T, i){
+  if (!T.events.length) { $('threads').innerHTML = ''; return; }
+  const rows = stateAt(T, i);
+  $('threads').innerHTML = '<table><tr><th>thread</th><th>state</th><th>holds mutexes</th><th>last operation</th></tr>' + rows.map(r =>
+    '<tr><td style="color:'+tcol(r.t)+';font-weight:600">T'+r.t+'</td><td><span class="st '+r.cls+'">'+esc(r.st)+'</span></td><td>'+(r.held.length? r.held.map(h=>'<code>'+esc(h)+'</code>').join(', ') : '—')+'</td><td>'+esc(r.last||'—')+'</td></tr>').join('') + '</table>';
+}
+
+function findings(T){
+  const r = T.result || {}, box = $('finds'); box.innerHTML = '';
+  const list = [];
+  if (r.failure) list.push({kind:r.failure.type, text:r.failure.signature+' — '+r.failure.message, step:Math.max(0,(r.failure.step||1)-1)});
+  if (r.divergence) list.push({kind:'DIVERGENCE', text:r.divergence.reason, step:Math.max(0,r.divergence.step-1)});
+  (r.findings||[]).forEach(f=>{ if (!r.failure || f.signature !== r.failure.signature) list.push({kind:f.type, text:f.signature+' — '+f.message, step: f.type==='RACE' ? f.b.step : Math.max(0,f.step)}); });
+  if (!list.length){ box.innerHTML = '<div class="empty">No failure and no detector findings in this execution.</div>'; return; }
+  list.forEach(f=>{ const b = document.createElement('button'); b.className = 'find '+f.kind; b.innerHTML = '<span class="k">'+esc(f.kind)+'</span>'+esc(f.text)+' <span class="sub">(jump to step '+f.step+')</span>'; b.onclick = ()=>select(f.step); box.appendChild(b); });
+}
+
+function select(i){
+  const T = DATA.traces[cur]; if (!T.events.length) return;
+  sel = Math.max(0, Math.min(T.events.length-1, i));
+  $('scrub').value = sel; $('stepno').textContent = 'step '+sel+' / '+(T.events.length-1);
+  const c = $('cursor'); if (c) c.setAttribute('x', LEFT + sel*CW);
+  const wrap = $('tlwrap'), px = LEFT + sel*CW;
+  if (px < wrap.scrollLeft + 40 || px > wrap.scrollLeft + wrap.clientWidth - 60) wrap.scrollLeft = Math.max(0, px - wrap.clientWidth/2);
+  detail(T, sel); threadsPanel(T, sel);
+}
+
+function legend(){
+  $('legend').innerHTML = Object.keys(CATNAME).map(c=>'<span><i style="background:var(--c-'+c+')"></i>'+CATNAME[c]+'</span>').join('')
+    + '<span><i style="background:var(--ready);border:1px solid var(--line)"></i>runnable, waiting</span><span><i style="background:var(--blk)"></i>blocked</span>'
+    + '<span><i style="border:2px dashed var(--bad);background:transparent"></i>preemptive switch</span><span><i style="border:2px solid var(--bad);background:transparent"></i>racing access</span>';
+}
+
+function render(){
+  const T = DATA.traces[cur];
+  $('ttl').textContent = DATA.title;
+  $('sub').textContent = 'program ' + T.header.program + ' · generated from a Chronos execution trace (no simulated data)';
+  tabs(); chips(T); minimap(T); drawTimeline(T); findings(T); legend();
+  const n = T.events.length; $('scrub').max = Math.max(0, n-1);
+  select(sel);
+}
+$('scrub').oninput = e => select(parseInt(e.target.value,10));
+$('prev').onclick = ()=>select(sel-1); $('next').onclick = ()=>select(sel+1);
+['fHB','fSW','fST','fLife'].forEach(id => $(id).onchange = applyFilters);
+document.addEventListener('keydown', e => { if (e.key==='ArrowRight') select(sel+1); else if (e.key==='ArrowLeft') select(sel-1); else if (e.key==='Home') select(0); else if (e.key==='End') select(1e9); });
+render();
+})();
+</script></body></html>

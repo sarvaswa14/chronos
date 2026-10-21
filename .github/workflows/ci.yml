@@ -1,0 +1,41 @@
+name: Chronos CI
+on:
+  push:
+  pull_request:
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build runtime and programs
+        run: make clean && make all
+      - name: Install visualizer test dependency
+        run: npm ci --prefix tools
+      - name: Phase 2 unit tests
+        run: make phase2-test
+      - name: Full test suite
+        run: python3 tests/test_runner.py
+      - name: Visualizer DOM checks
+        run: |
+          python3 - <<'PYCODE'
+          import json
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, 'tools')
+          import chronos_viz
+          trace = 'examples/release_demo/lost_update_trace.jsonl'
+          data = chronos_viz.load_trace(trace)
+          steps = len(data['events'])
+          signature = data['result'].get('failure', {}).get('signature', '')
+          html = '/tmp/chronos-viz-ci.html'
+          chronos_viz.build([('original', trace), ('comparison', trace)], html, title='Chronos CI visualizer')
+          Path('/tmp/chronos-viz-ci-expect.json').write_text(json.dumps({'steps': [steps, steps], 'tabs': 2, 'signature': signature}))
+          PYCODE
+          node tests/viz_dom_check.js /tmp/chronos-viz-ci.html "$(cat /tmp/chronos-viz-ci-expect.json)"

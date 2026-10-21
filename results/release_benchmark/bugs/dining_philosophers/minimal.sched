@@ -1,0 +1,14 @@
+chronos-schedule 1
+program dining_philosophers
+fail DEADLOCK[join,mutex_lock,mutex_lock,mutex_lock]
+steps 9
+0 0 0 create -1 1
+1 1 0 start -1 3
+2 1 1 mutex_lock 0 3
+3 0 1 create -1 3
+4 2 0 start -1 7
+5 2 1 mutex_lock 1 7
+6 0 2 create -1 5
+7 3 0 start -1 c
+8 3 1 mutex_lock 2 c
+end

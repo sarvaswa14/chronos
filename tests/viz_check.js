@@ -1,0 +1,20 @@
+const {JSDOM} = require(process.env.JSDOM_PATH || 'jsdom'); const fs=require('fs');
+const html = fs.readFileSync(process.argv[2],'utf8');
+const errors=[];
+const dom = new JSDOM(html, {runScripts:'dangerously', pretendToBeVisual:true, beforeParse(w){ w.addEventListener('error', e=>errors.push(String(e.error||e.message))); }});
+const d = dom.window.document;
+const data = JSON.parse(d.getElementById('data').textContent);
+const n = data.traces[0].events.length;
+console.log('errors:', errors.length ? errors : 'none');
+console.log('event glyphs:', d.querySelectorAll('#gEv g').length, 'expected', n);
+console.log('minimap cells:', d.querySelectorAll('#minimap i').length);
+console.log('hb edges:', d.querySelectorAll('#gHB path').length, 'race connectors+: svg paths', d.querySelectorAll('#tl path').length);
+console.log('chips:', Array.from(d.querySelectorAll('.chip')).map(c=>c.textContent).join(' | '));
+console.log('findings buttons:', d.querySelectorAll('.find').length);
+console.log('tabs:', d.querySelectorAll('.tab').length);
+// interact: click an event, switch tab
+d.querySelector('#gEv g[data-i="5"]').dispatchEvent(new dom.window.Event('click'));
+console.log('detail after click has step 5:', d.getElementById('detail').textContent.includes('step5') || d.getElementById('detail').textContent.includes('5 of'));
+console.log('threads table rows:', d.querySelectorAll('#threads tr').length);
+d.querySelectorAll('.tab')[1].dispatchEvent(new dom.window.Event('click'));
+console.log('after tab switch events:', d.querySelectorAll('#gEv g').length, 'expected', data.traces[1].events.length);

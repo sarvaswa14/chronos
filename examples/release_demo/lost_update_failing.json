@@ -1,0 +1,72 @@
+{
+ "chronos": 1,
+ "status": "failure",
+ "program": "lost_update",
+ "strategy": "random",
+ "seed": 1,
+ "steps": 44,
+ "threads": 3,
+ "switches": 27,
+ "preemptions": 21,
+ "failure": {
+  "type": "ASSERT",
+  "signature": "ASSERT@lost_update.c:41",
+  "message": "assertion 'counter == 2 * N' failed: lost update: counter != 2*N",
+  "tid": 0,
+  "step": 44,
+  "file": "lost_update.c",
+  "line": 41
+ },
+ "findings": [
+  {
+   "type": "RACE",
+   "signature": "RACE[counter@lost_update.c:28(R),counter@lost_update.c:29(W)]",
+   "message": "data race on 'counter': t1 write at lost_update.c:29 vs t2 read at lost_update.c:28 (no happens-before)",
+   "tid": 2,
+   "step": 18,
+   "file": "lost_update.c",
+   "line": 28,
+   "a": {
+    "tid": 1,
+    "step": 11,
+    "write": true,
+    "var": "counter",
+    "file": "lost_update.c",
+    "line": 29
+   },
+   "b": {
+    "tid": 2,
+    "step": 18,
+    "write": false,
+    "var": "counter",
+    "file": "lost_update.c",
+    "line": 28
+   }
+  },
+  {
+   "type": "RACE",
+   "signature": "RACE[counter@lost_update.c:29(W),counter@lost_update.c:29(W)]",
+   "message": "data race on 'counter': t1 write at lost_update.c:29 vs t2 write at lost_update.c:29 (no happens-before)",
+   "tid": 2,
+   "step": 20,
+   "file": "lost_update.c",
+   "line": 29,
+   "a": {
+    "tid": 1,
+    "step": 11,
+    "write": true,
+    "var": "counter",
+    "file": "lost_update.c",
+    "line": 29
+   },
+   "b": {
+    "tid": 2,
+    "step": 20,
+    "write": true,
+    "var": "counter",
+    "file": "lost_update.c",
+    "line": 29
+   }
+  }
+ ]
+}

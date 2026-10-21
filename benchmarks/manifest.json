@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "description": "Chronos Phase 1 benchmark manifest. One row per case: build artefact, arguments, failure oracle (signature prefix), detector expectation, budgets, timeout.",
+  "environment": {"scheduler": "libchronos.so (LD_PRELOAD)", "language": "C11 / C++17", "model": "sequentially consistent, sync-level"},
+  "bugs": [
+    {"name": "lost_update",          "binary": "bugs/lost_update",          "args": [], "oracle": "ASSERT@lost_update.c",
+     "class": "lost update (non-atomic read-modify-write)", "expect_race": true,  "expect_lockorder": false, "budget": 3000, "timeout": 20, "native_runs": 200},
+    {"name": "atomicity_violation",  "binary": "bugs/atomicity_violation",  "args": [], "oracle": "ASSERT@atomicity_violation.c",
+     "class": "atomicity violation (race-free)",            "expect_race": false, "expect_lockorder": false, "budget": 3000, "timeout": 20, "native_runs": 200},
+    {"name": "lock_order_deadlock",  "binary": "bugs/lock_order_deadlock",  "args": [], "oracle": "DEADLOCK",
+     "class": "lock-order inversion (AB/BA)",               "expect_race": false, "expect_lockorder": true,  "budget": 3000, "timeout": 20, "native_runs": 100},
+    {"name": "lost_wakeup",          "binary": "bugs/lost_wakeup",          "args": [], "oracle": "DEADLOCK",
+     "class": "lost wake-up (condvar without predicate)",   "expect_race": false, "expect_lockorder": false, "budget": 3000, "timeout": 20, "native_runs": 100},
+    {"name": "dining_philosophers",  "binary": "bugs/dining_philosophers",  "args": [], "oracle": "DEADLOCK",
+     "class": "circular wait over 3 locks",                 "expect_race": false, "expect_lockorder": true,  "budget": 3000, "timeout": 20, "native_runs": 100},
+    {"name": "order_violation",      "binary": "bugs/order_violation",      "args": [], "oracle": "ASSERT@order_violation.c",
+     "class": "order violation (use before init)",          "expect_race": true,  "expect_lockorder": false, "budget": 3000, "timeout": 20, "native_runs": 200},
+    {"name": "double_checked_init",  "binary": "bugs/double_checked_init",  "args": [], "oracle": "ASSERT@double_checked_init.c",
+     "class": "broken double-checked initialisation",       "expect_race": true,  "expect_lockorder": false, "budget": 3000, "timeout": 20, "native_runs": 200},
+    {"name": "cond_if_not_while",    "binary": "bugs/cond_if_not_while",    "args": [], "oracle": "ASSERT@cond_if_not_while.c",
+     "class": "condvar `if` instead of `while`",            "expect_race": false, "expect_lockorder": false, "budget": 6000, "timeout": 20, "native_runs": 200},
+    {"name": "cpp_atomicity",        "binary": "bugs/cpp_atomicity",        "args": [], "oracle": "ASSERT@cpp_atomicity.cpp",
+     "class": "atomicity violation in C++ (std::thread/mutex)", "expect_race": false, "expect_lockorder": false, "budget": 3000, "timeout": 20, "native_runs": 200}
+  ],
+  "controls": [
+    {"name": "counter_mutex",        "binary": "controls/counter_mutex",        "args": []},
+    {"name": "prodcons_cv",          "binary": "controls/prodcons_cv",          "args": [], "spurious": 4},
+    {"name": "barrier_phases",       "binary": "controls/barrier_phases",       "args": []},
+    {"name": "semaphore_lock",       "binary": "controls/semaphore_lock",       "args": []},
+    {"name": "philosophers_ordered", "binary": "controls/philosophers_ordered", "args": []},
+    {"name": "init_once",            "binary": "controls/init_once",            "args": []},
+    {"name": "atomic_mp",            "binary": "controls/atomic_mp",            "args": []},
+    {"name": "cpp_condvar_queue",    "binary": "controls/cpp_condvar_queue",    "args": [], "spurious": 4}
+  ]
+}

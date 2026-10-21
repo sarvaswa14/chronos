@@ -1,0 +1,10 @@
+{"chronos_trace":1,"program":"order_violation","strategy":"replay","seed":1,"threads":2,"steps":8,"objects":[{"id":0,"kind":"mutex","name":"mutex#0"}]}
+{"i":0,"t":0,"k":0,"op":"create","o":-1,"a":1,"run":"1","hb":[]}
+{"i":1,"t":0,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"3","hb":[],"nm":"mutex#0"}
+{"i":2,"t":0,"k":2,"op":"mutex_unlock","o":0,"a":0,"run":"3","hb":[],"nm":"mutex#0"}
+{"i":3,"t":0,"k":3,"op":"write","o":-1,"a":0,"run":"3","hb":[],"nm":"config_val","f":"order_violation.c","l":34}
+{"i":4,"t":1,"k":0,"op":"start","o":-1,"a":0,"run":"3","hb":[0]}
+{"i":5,"t":1,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"3","hb":[2],"nm":"mutex#0"}
+{"i":6,"t":1,"k":2,"op":"mutex_unlock","o":0,"a":0,"run":"3","hb":[],"nm":"mutex#0"}
+{"i":7,"t":1,"k":3,"op":"read","o":-1,"a":0,"run":"3","hb":[],"nm":"config_ready","f":"order_violation.c","l":22}
+{"end":1,"result":{"chronos":1,"status":"failure","program":"order_violation","strategy":"replay","seed":1,"steps":8,"threads":2,"switches":1,"preemptions":1,"failure":{"type":"ASSERT","signature":"ASSERT@order_violation.c:23","message":"assertion 'r == 1' failed: worker used the configuration before it was initialised","tid":1,"step":8,"file":"order_violation.c","line":23},"findings":[]}}

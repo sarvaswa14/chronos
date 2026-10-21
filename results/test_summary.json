@@ -1,0 +1,12 @@
+{
+ "tests": 57,
+ "failures": 0,
+ "errors": 0,
+ "skipped": 1,
+ "executions_through_driver": 14629,
+ "elapsed_s": 542.9,
+ "fuzz_inputs": 7500,
+ "asan_runs": 528,
+ "tsan_runs": 528,
+ "passed": true
+}

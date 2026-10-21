@@ -1,0 +1,27 @@
+chronos-schedule 1
+program cond_if_not_while
+fail ASSERT@cond_if_not_while.c:21
+steps 22
+0 0 0 create -1 1
+1 0 1 create -1 3
+2 0 2 create -1 7
+3 1 0 start -1 e
+4 1 1 mutex_lock 0 e
+5 1 2 read -1 e
+6 1 3 cond_wait 1 e
+7 3 0 start -1 c
+8 3 1 mutex_lock 0 c
+9 3 2 read -1 c
+10 3 3 write -1 c
+11 3 4 cond_signal 1 c
+12 3 5 mutex_unlock 0 c
+13 2 0 start -1 e
+14 2 1 mutex_lock 0 e
+15 2 2 read -1 4
+16 2 3 read -1 4
+17 2 4 write -1 4
+18 2 5 mutex_unlock 0 4
+19 2 6 exit -1 e
+20 1 4 cond_wake 1 a
+21 1 5 read -1 2
+end

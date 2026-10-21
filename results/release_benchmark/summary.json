@@ -1,0 +1,1218 @@
+{
+ "generated": "2026-10-21 09:14:01",
+ "host": "Linux 6.18.55, 5 CPU",
+ "reps": 5,
+ "quick": true,
+ "bugs": [
+  {
+   "name": "lost_update",
+   "class": "lost update (non-atomic read-modify-write)",
+   "oracle": "ASSERT@lost_update.c",
+   "native": {
+    "runs": 30,
+    "failures": 0
+   },
+   "random": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 1,
+     "mean": 1.8,
+     "p90": 4,
+     "min": 1,
+     "max": 4
+    },
+    "samples": [
+     1,
+     2,
+     1,
+     1,
+     4
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 62,
+     "failure_rate": 0.62,
+     "finding_types": {
+      "RACE": 100
+     },
+     "signatures": {
+      "ASSERT@lost_update.c:41": 62
+     },
+     "anomalies": 0
+    }
+   },
+   "pct": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 23,
+     "mean": 19.8,
+     "p90": 35,
+     "min": 6,
+     "max": 35
+    },
+    "samples": [
+     23,
+     35,
+     6,
+     28,
+     7
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 11,
+     "failure_rate": 0.11,
+     "finding_types": {
+      "RACE": 100
+     },
+     "signatures": {
+      "ASSERT@lost_update.c:41": 11
+     },
+     "anomalies": 0
+    }
+   },
+   "icb": {
+    "strategy": "icb",
+    "found": true,
+    "bound": 1,
+    "schedules_to_first_failure": 24,
+    "wall": 0.05719399452209473,
+    "signatures": {
+     "ASSERT@lost_update.c:41": 1
+    }
+   },
+   "captured": true,
+   "failing_signature": "ASSERT@lost_update.c:41",
+   "failing_steps": 44,
+   "replay": {
+    "times": 100,
+    "matches": 100,
+    "divergences": 0,
+    "other": 0,
+    "rate": 1.0,
+    "expected": "ASSERT@lost_update.c:41"
+   },
+   "minimize": {
+    "target": "ASSERT@lost_update.c:41",
+    "original": {
+     "steps": 44,
+     "switches": 27,
+     "preemptions": 21,
+     "deviations": 22
+    },
+    "reproduced_in_override_form": true,
+    "minimal": {
+     "steps": 44,
+     "switches": 4,
+     "preemptions": 1,
+     "deviations": 1
+    },
+    "one_minimal": true,
+    "strict_replay_verified": true,
+    "test_runs": 8,
+    "switch_reduction": 0.8518518518518519,
+    "deviation_reduction": 0.9545454545454546
+   },
+   "elapsed": 1.0646374225616455,
+   "expect_race": true,
+   "expect_lockorder": false,
+   "checks": {
+    "bug found by at least one strategy": true,
+    "strict replay 100/100 with matching signature": true,
+    "minimised schedule reproduces and is 1-minimal": true,
+    "minimised schedule strictly replays": true,
+    "minimised schedule not larger than original": true
+   },
+   "detector_ok": true
+  },
+  {
+   "name": "atomicity_violation",
+   "class": "atomicity violation (race-free)",
+   "oracle": "ASSERT@atomicity_violation.c",
+   "native": {
+    "runs": 30,
+    "failures": 0
+   },
+   "random": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 2,
+     "mean": 1.6,
+     "p90": 2,
+     "min": 1,
+     "max": 2
+    },
+    "samples": [
+     2,
+     1,
+     2,
+     2,
+     1
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 75,
+     "failure_rate": 0.75,
+     "finding_types": {},
+     "signatures": {
+      "ASSERT@atomicity_violation.c:45": 75
+     },
+     "anomalies": 0
+    }
+   },
+   "pct": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 6,
+     "mean": 8,
+     "p90": 15,
+     "min": 2,
+     "max": 15
+    },
+    "samples": [
+     11,
+     6,
+     2,
+     15,
+     6
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 13,
+     "failure_rate": 0.13,
+     "finding_types": {},
+     "signatures": {
+      "ASSERT@atomicity_violation.c:45": 13
+     },
+     "anomalies": 0
+    }
+   },
+   "icb": {
+    "strategy": "icb",
+    "found": true,
+    "bound": 1,
+    "schedules_to_first_failure": 24,
+    "wall": 0.053598880767822266,
+    "signatures": {
+     "ASSERT@atomicity_violation.c:45": 1
+    }
+   },
+   "captured": true,
+   "failing_signature": "ASSERT@atomicity_violation.c:45",
+   "failing_steps": 34,
+   "replay": {
+    "times": 100,
+    "matches": 100,
+    "divergences": 0,
+    "other": 0,
+    "rate": 1.0,
+    "expected": "ASSERT@atomicity_violation.c:45"
+   },
+   "minimize": {
+    "target": "ASSERT@atomicity_violation.c:45",
+    "original": {
+     "steps": 34,
+     "switches": 13,
+     "preemptions": 9,
+     "deviations": 10
+    },
+    "reproduced_in_override_form": true,
+    "minimal": {
+     "steps": 34,
+     "switches": 5,
+     "preemptions": 1,
+     "deviations": 2
+    },
+    "one_minimal": true,
+    "strict_replay_verified": true,
+    "test_runs": 7,
+    "switch_reduction": 0.6153846153846154,
+    "deviation_reduction": 0.8
+   },
+   "elapsed": 0.8120386600494385,
+   "expect_race": false,
+   "expect_lockorder": false,
+   "checks": {
+    "bug found by at least one strategy": true,
+    "strict replay 100/100 with matching signature": true,
+    "minimised schedule reproduces and is 1-minimal": true,
+    "minimised schedule strictly replays": true,
+    "minimised schedule not larger than original": true
+   },
+   "detector_ok": true
+  },
+  {
+   "name": "lock_order_deadlock",
+   "class": "lock-order inversion (AB/BA)",
+   "oracle": "DEADLOCK",
+   "native": {
+    "runs": 30,
+    "failures": 0
+   },
+   "random": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 1,
+     "mean": 1.6,
+     "p90": 3,
+     "min": 1,
+     "max": 3
+    },
+    "samples": [
+     1,
+     2,
+     1,
+     3,
+     1
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 25,
+     "failure_rate": 0.25,
+     "finding_types": {
+      "LOCKORDER": 75
+     },
+     "signatures": {
+      "DEADLOCK[join,mutex_lock,mutex_lock]": 25
+     },
+     "anomalies": 0
+    }
+   },
+   "pct": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 22,
+     "mean": 26,
+     "p90": 60,
+     "min": 7,
+     "max": 60
+    },
+    "samples": [
+     22,
+     10,
+     31,
+     60,
+     7
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 3,
+     "failure_rate": 0.03,
+     "finding_types": {
+      "LOCKORDER": 97
+     },
+     "signatures": {
+      "DEADLOCK[join,mutex_lock,mutex_lock]": 3
+     },
+     "anomalies": 0
+    }
+   },
+   "icb": {
+    "strategy": "icb",
+    "found": true,
+    "bound": 1,
+    "schedules_to_first_failure": 14,
+    "wall": 0.030705928802490234,
+    "signatures": {
+     "DEADLOCK[join,mutex_lock,mutex_lock]": 1
+    }
+   },
+   "captured": true,
+   "failing_signature": "DEADLOCK[join,mutex_lock,mutex_lock]",
+   "failing_steps": 6,
+   "replay": {
+    "times": 100,
+    "matches": 100,
+    "divergences": 0,
+    "other": 0,
+    "rate": 1.0,
+    "expected": "DEADLOCK[join,mutex_lock,mutex_lock]"
+   },
+   "minimize": {
+    "target": "DEADLOCK[join,mutex_lock,mutex_lock]",
+    "original": {
+     "steps": 6,
+     "switches": 5,
+     "preemptions": 4,
+     "deviations": 5
+    },
+    "reproduced_in_override_form": true,
+    "minimal": {
+     "steps": 6,
+     "switches": 2,
+     "preemptions": 1,
+     "deviations": 1
+    },
+    "one_minimal": true,
+    "strict_replay_verified": true,
+    "test_runs": 5,
+    "switch_reduction": 0.6,
+    "deviation_reduction": 0.8
+   },
+   "elapsed": 0.9316768646240234,
+   "expect_race": false,
+   "expect_lockorder": true,
+   "checks": {
+    "bug found by at least one strategy": true,
+    "strict replay 100/100 with matching signature": true,
+    "minimised schedule reproduces and is 1-minimal": true,
+    "minimised schedule strictly replays": true,
+    "minimised schedule not larger than original": true
+   },
+   "detector_ok": true
+  },
+  {
+   "name": "lost_wakeup",
+   "class": "lost wake-up (condvar without predicate)",
+   "oracle": "DEADLOCK",
+   "native": {
+    "runs": 30,
+    "failures": 1
+   },
+   "random": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 3,
+     "mean": 3.4,
+     "p90": 5,
+     "min": 2,
+     "max": 5
+    },
+    "samples": [
+     2,
+     5,
+     3,
+     5,
+     2
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 31,
+     "failure_rate": 0.31,
+     "finding_types": {},
+     "signatures": {
+      "DEADLOCK[cond_wait,join]": 31
+     },
+     "anomalies": 0
+    }
+   },
+   "pct": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 1,
+     "mean": 2,
+     "p90": 5,
+     "min": 1,
+     "max": 5
+    },
+    "samples": [
+     1,
+     5,
+     1,
+     2,
+     1
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 32,
+     "failure_rate": 0.32,
+     "finding_types": {},
+     "signatures": {
+      "DEADLOCK[cond_wait,join]": 32
+     },
+     "anomalies": 0
+    }
+   },
+   "icb": {
+    "strategy": "icb",
+    "found": true,
+    "bound": 0,
+    "schedules_to_first_failure": 2,
+    "wall": 0.003717184066772461,
+    "signatures": {
+     "DEADLOCK[cond_wait,join]": 1
+    }
+   },
+   "captured": true,
+   "failing_signature": "DEADLOCK[cond_wait,join]",
+   "failing_steps": 11,
+   "replay": {
+    "times": 100,
+    "matches": 100,
+    "divergences": 0,
+    "other": 0,
+    "rate": 1.0,
+    "expected": "DEADLOCK[cond_wait,join]"
+   },
+   "minimize": {
+    "target": "DEADLOCK[cond_wait,join]",
+    "original": {
+     "steps": 11,
+     "switches": 4,
+     "preemptions": 2,
+     "deviations": 3
+    },
+    "reproduced_in_override_form": true,
+    "minimal": {
+     "steps": 11,
+     "switches": 2,
+     "preemptions": 0,
+     "deviations": 1
+    },
+    "one_minimal": true,
+    "strict_replay_verified": true,
+    "test_runs": 5,
+    "switch_reduction": 0.5,
+    "deviation_reduction": 0.6666666666666667
+   },
+   "elapsed": 1.7004954814910889,
+   "expect_race": false,
+   "expect_lockorder": false,
+   "checks": {
+    "bug found by at least one strategy": true,
+    "strict replay 100/100 with matching signature": true,
+    "minimised schedule reproduces and is 1-minimal": true,
+    "minimised schedule strictly replays": true,
+    "minimised schedule not larger than original": true
+   },
+   "detector_ok": true
+  },
+  {
+   "name": "dining_philosophers",
+   "class": "circular wait over 3 locks",
+   "oracle": "DEADLOCK",
+   "native": {
+    "runs": 30,
+    "failures": 0
+   },
+   "random": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 4,
+     "mean": 5.4,
+     "p90": 11,
+     "min": 2,
+     "max": 11
+    },
+    "samples": [
+     8,
+     2,
+     4,
+     2,
+     11
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 9,
+     "failure_rate": 0.09,
+     "finding_types": {
+      "LOCKORDER": 91
+     },
+     "signatures": {
+      "DEADLOCK[join,mutex_lock,mutex_lock,mutex_lock]": 9
+     },
+     "anomalies": 0
+    }
+   },
+   "pct": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 68,
+     "mean": 50.8,
+     "p90": 100,
+     "min": 3,
+     "max": 100
+    },
+    "samples": [
+     75,
+     100,
+     68,
+     8,
+     3
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 4,
+     "failure_rate": 0.04,
+     "finding_types": {
+      "LOCKORDER": 96
+     },
+     "signatures": {
+      "DEADLOCK[join,mutex_lock,mutex_lock,mutex_lock]": 4
+     },
+     "anomalies": 0
+    }
+   },
+   "icb": {
+    "strategy": "icb",
+    "found": true,
+    "bound": 1,
+    "schedules_to_first_failure": 151,
+    "wall": 0.36562609672546387,
+    "signatures": {
+     "DEADLOCK[join,mutex_lock,mutex_lock,mutex_lock]": 1
+    }
+   },
+   "captured": true,
+   "failing_signature": "DEADLOCK[join,mutex_lock,mutex_lock,mutex_lock]",
+   "failing_steps": 9,
+   "replay": {
+    "times": 100,
+    "matches": 100,
+    "divergences": 0,
+    "other": 0,
+    "rate": 1.0,
+    "expected": "DEADLOCK[join,mutex_lock,mutex_lock,mutex_lock]"
+   },
+   "minimize": {
+    "target": "DEADLOCK[join,mutex_lock,mutex_lock,mutex_lock]",
+    "original": {
+     "steps": 9,
+     "switches": 5,
+     "preemptions": 4,
+     "deviations": 5
+    },
+    "reproduced_in_override_form": true,
+    "minimal": {
+     "steps": 9,
+     "switches": 5,
+     "preemptions": 4,
+     "deviations": 5
+    },
+    "one_minimal": true,
+    "strict_replay_verified": true,
+    "test_runs": 16,
+    "switch_reduction": 0.0,
+    "deviation_reduction": 0.0
+   },
+   "elapsed": 1.6371712684631348,
+   "expect_race": false,
+   "expect_lockorder": true,
+   "checks": {
+    "bug found by at least one strategy": true,
+    "strict replay 100/100 with matching signature": true,
+    "minimised schedule reproduces and is 1-minimal": true,
+    "minimised schedule strictly replays": true,
+    "minimised schedule not larger than original": true
+   },
+   "detector_ok": true
+  },
+  {
+   "name": "order_violation",
+   "class": "order violation (use before init)",
+   "oracle": "ASSERT@order_violation.c",
+   "native": {
+    "runs": 30,
+    "failures": 0
+   },
+   "random": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 3,
+     "mean": 3.2,
+     "p90": 7,
+     "min": 1,
+     "max": 7
+    },
+    "samples": [
+     2,
+     7,
+     1,
+     3,
+     3
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 45,
+     "failure_rate": 0.45,
+     "finding_types": {
+      "RACE": 55
+     },
+     "signatures": {
+      "ASSERT@order_violation.c:23": 45
+     },
+     "anomalies": 0
+    }
+   },
+   "pct": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 2,
+     "mean": 1.8,
+     "p90": 2,
+     "min": 1,
+     "max": 2
+    },
+    "samples": [
+     2,
+     2,
+     2,
+     1,
+     2
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 55,
+     "failure_rate": 0.55,
+     "finding_types": {
+      "RACE": 45
+     },
+     "signatures": {
+      "ASSERT@order_violation.c:23": 55
+     },
+     "anomalies": 0
+    }
+   },
+   "icb": {
+    "strategy": "icb",
+    "found": true,
+    "bound": 1,
+    "schedules_to_first_failure": 2,
+    "wall": 0.007645130157470703,
+    "signatures": {
+     "ASSERT@order_violation.c:23": 1
+    }
+   },
+   "captured": true,
+   "failing_signature": "ASSERT@order_violation.c:23",
+   "failing_steps": 8,
+   "replay": {
+    "times": 100,
+    "matches": 100,
+    "divergences": 0,
+    "other": 0,
+    "rate": 1.0,
+    "expected": "ASSERT@order_violation.c:23"
+   },
+   "minimize": {
+    "target": "ASSERT@order_violation.c:23",
+    "original": {
+     "steps": 8,
+     "switches": 5,
+     "preemptions": 5,
+     "deviations": 5
+    },
+    "reproduced_in_override_form": true,
+    "minimal": {
+     "steps": 8,
+     "switches": 1,
+     "preemptions": 1,
+     "deviations": 1
+    },
+    "one_minimal": true,
+    "strict_replay_verified": true,
+    "test_runs": 5,
+    "switch_reduction": 0.8,
+    "deviation_reduction": 0.8
+   },
+   "elapsed": 0.6704187393188477,
+   "expect_race": true,
+   "expect_lockorder": false,
+   "checks": {
+    "bug found by at least one strategy": true,
+    "strict replay 100/100 with matching signature": true,
+    "minimised schedule reproduces and is 1-minimal": true,
+    "minimised schedule strictly replays": true,
+    "minimised schedule not larger than original": true
+   },
+   "detector_ok": true
+  },
+  {
+   "name": "double_checked_init",
+   "class": "broken double-checked initialisation",
+   "oracle": "ASSERT@double_checked_init.c",
+   "native": {
+    "runs": 30,
+    "failures": 1
+   },
+   "random": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 1,
+     "mean": 1.8,
+     "p90": 4,
+     "min": 1,
+     "max": 4
+    },
+    "samples": [
+     2,
+     1,
+     1,
+     1,
+     4
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 69,
+     "failure_rate": 0.69,
+     "finding_types": {
+      "RACE": 100
+     },
+     "signatures": {
+      "ASSERT@double_checked_init.c:36": 69
+     },
+     "anomalies": 0
+    }
+   },
+   "pct": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 6,
+     "mean": 6.6,
+     "p90": 12,
+     "min": 2,
+     "max": 12
+    },
+    "samples": [
+     2,
+     2,
+     6,
+     11,
+     12
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 14,
+     "failure_rate": 0.14,
+     "finding_types": {
+      "RACE": 100
+     },
+     "signatures": {
+      "ASSERT@double_checked_init.c:36": 14
+     },
+     "anomalies": 0
+    }
+   },
+   "icb": {
+    "strategy": "icb",
+    "found": true,
+    "bound": 1,
+    "schedules_to_first_failure": 10,
+    "wall": 0.021198034286499023,
+    "signatures": {
+     "ASSERT@double_checked_init.c:36": 1
+    }
+   },
+   "captured": true,
+   "failing_signature": "ASSERT@double_checked_init.c:36",
+   "failing_steps": 24,
+   "replay": {
+    "times": 100,
+    "matches": 100,
+    "divergences": 0,
+    "other": 0,
+    "rate": 1.0,
+    "expected": "ASSERT@double_checked_init.c:36"
+   },
+   "minimize": {
+    "target": "ASSERT@double_checked_init.c:36",
+    "original": {
+     "steps": 24,
+     "switches": 9,
+     "preemptions": 5,
+     "deviations": 6
+    },
+    "reproduced_in_override_form": true,
+    "minimal": {
+     "steps": 24,
+     "switches": 6,
+     "preemptions": 1,
+     "deviations": 1
+    },
+    "one_minimal": true,
+    "strict_replay_verified": true,
+    "test_runs": 7,
+    "switch_reduction": 0.33333333333333337,
+    "deviation_reduction": 0.8333333333333334
+   },
+   "elapsed": 0.7465367317199707,
+   "expect_race": true,
+   "expect_lockorder": false,
+   "checks": {
+    "bug found by at least one strategy": true,
+    "strict replay 100/100 with matching signature": true,
+    "minimised schedule reproduces and is 1-minimal": true,
+    "minimised schedule strictly replays": true,
+    "minimised schedule not larger than original": true
+   },
+   "detector_ok": true
+  },
+  {
+   "name": "cond_if_not_while",
+   "class": "condvar `if` instead of `while`",
+   "oracle": "ASSERT@cond_if_not_while.c",
+   "native": {
+    "runs": 30,
+    "failures": 0
+   },
+   "random": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 8,
+     "mean": 11.2,
+     "p90": 26,
+     "min": 3,
+     "max": 26
+    },
+    "samples": [
+     3,
+     26,
+     8,
+     8,
+     11
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 9,
+     "failure_rate": 0.09,
+     "finding_types": {},
+     "signatures": {
+      "ASSERT@cond_if_not_while.c:21": 9
+     },
+     "anomalies": 0
+    }
+   },
+   "pct": {
+    "reps": 3,
+    "found": 0,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 0,
+     "median": null,
+     "mean": null,
+     "p90": null,
+     "min": null,
+     "max": null
+    },
+    "samples": [],
+    "rate": {
+     "runs": 100,
+     "failures": 0,
+     "failure_rate": 0.0,
+     "finding_types": {},
+     "signatures": {},
+     "anomalies": 0
+    }
+   },
+   "icb": {
+    "strategy": "icb",
+    "found": true,
+    "bound": 1,
+    "schedules_to_first_failure": 84,
+    "wall": 0.24808430671691895,
+    "signatures": {
+     "ASSERT@cond_if_not_while.c:21": 1
+    }
+   },
+   "captured": true,
+   "failing_signature": "ASSERT@cond_if_not_while.c:21",
+   "failing_steps": 22,
+   "replay": {
+    "times": 100,
+    "matches": 100,
+    "divergences": 0,
+    "other": 0,
+    "rate": 1.0,
+    "expected": "ASSERT@cond_if_not_while.c:21"
+   },
+   "minimize": {
+    "target": "ASSERT@cond_if_not_while.c:21",
+    "original": {
+     "steps": 22,
+     "switches": 10,
+     "preemptions": 5,
+     "deviations": 8
+    },
+    "reproduced_in_override_form": true,
+    "minimal": {
+     "steps": 22,
+     "switches": 4,
+     "preemptions": 1,
+     "deviations": 2
+    },
+    "one_minimal": true,
+    "strict_replay_verified": true,
+    "test_runs": 7,
+    "switch_reduction": 0.6,
+    "deviation_reduction": 0.75
+   },
+   "elapsed": 7.962074518203735,
+   "expect_race": false,
+   "expect_lockorder": false,
+   "checks": {
+    "bug found by at least one strategy": true,
+    "strict replay 100/100 with matching signature": true,
+    "minimised schedule reproduces and is 1-minimal": true,
+    "minimised schedule strictly replays": true,
+    "minimised schedule not larger than original": true
+   },
+   "detector_ok": true
+  },
+  {
+   "name": "cpp_atomicity",
+   "class": "atomicity violation in C++ (std::thread/mutex)",
+   "oracle": "ASSERT@cpp_atomicity.cpp",
+   "native": {
+    "runs": 30,
+    "failures": 3
+   },
+   "random": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 1,
+     "mean": 1.2,
+     "p90": 2,
+     "min": 1,
+     "max": 2
+    },
+    "samples": [
+     1,
+     1,
+     2,
+     1,
+     1
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 33,
+     "failure_rate": 0.33,
+     "finding_types": {},
+     "signatures": {
+      "ASSERT@cpp_atomicity.cpp:32": 33
+     },
+     "anomalies": 0
+    }
+   },
+   "pct": {
+    "reps": 5,
+    "found": 5,
+    "budget": 1000,
+    "schedules_to_first_failure": {
+     "n": 5,
+     "median": 4,
+     "mean": 5,
+     "p90": 11,
+     "min": 3,
+     "max": 11
+    },
+    "samples": [
+     4,
+     4,
+     3,
+     11,
+     3
+    ],
+    "rate": {
+     "runs": 100,
+     "failures": 16,
+     "failure_rate": 0.16,
+     "finding_types": {},
+     "signatures": {
+      "ASSERT@cpp_atomicity.cpp:32": 16
+     },
+     "anomalies": 0
+    }
+   },
+   "icb": {
+    "strategy": "icb",
+    "found": true,
+    "bound": 1,
+    "schedules_to_first_failure": 15,
+    "wall": 0.06469917297363281,
+    "signatures": {
+     "ASSERT@cpp_atomicity.cpp:32": 1
+    }
+   },
+   "captured": true,
+   "failing_signature": "ASSERT@cpp_atomicity.cpp:32",
+   "failing_steps": 22,
+   "replay": {
+    "times": 100,
+    "matches": 100,
+    "divergences": 0,
+    "other": 0,
+    "rate": 1.0,
+    "expected": "ASSERT@cpp_atomicity.cpp:32"
+   },
+   "minimize": {
+    "target": "ASSERT@cpp_atomicity.cpp:32",
+    "original": {
+     "steps": 22,
+     "switches": 11,
+     "preemptions": 7,
+     "deviations": 8
+    },
+    "reproduced_in_override_form": true,
+    "minimal": {
+     "steps": 22,
+     "switches": 4,
+     "preemptions": 1,
+     "deviations": 1
+    },
+    "one_minimal": true,
+    "strict_replay_verified": true,
+    "test_runs": 6,
+    "switch_reduction": 0.6363636363636364,
+    "deviation_reduction": 0.875
+   },
+   "elapsed": 1.4770488739013672,
+   "expect_race": false,
+   "expect_lockorder": false,
+   "checks": {
+    "bug found by at least one strategy": true,
+    "strict replay 100/100 with matching signature": true,
+    "minimised schedule reproduces and is 1-minimal": true,
+    "minimised schedule strictly replays": true,
+    "minimised schedule not larger than original": true
+   },
+   "detector_ok": true
+  }
+ ],
+ "controls": [
+  {
+   "name": "counter_mutex",
+   "checks": {},
+   "schedules": 500,
+   "dfs_schedules": 300,
+   "spurious_runs": 0,
+   "failures": 0,
+   "findings": 0,
+   "anomalies": 0,
+   "elapsed": 1.1263096332550049,
+   "pass": true
+  },
+  {
+   "name": "prodcons_cv",
+   "checks": {},
+   "schedules": 600,
+   "dfs_schedules": 300,
+   "spurious_runs": 100,
+   "failures": 0,
+   "findings": 0,
+   "anomalies": 0,
+   "elapsed": 1.3853073120117188,
+   "pass": true
+  },
+  {
+   "name": "barrier_phases",
+   "checks": {},
+   "schedules": 500,
+   "dfs_schedules": 300,
+   "spurious_runs": 0,
+   "failures": 0,
+   "findings": 0,
+   "anomalies": 0,
+   "elapsed": 1.277400255203247,
+   "pass": true
+  },
+  {
+   "name": "semaphore_lock",
+   "checks": {},
+   "schedules": 500,
+   "dfs_schedules": 300,
+   "spurious_runs": 0,
+   "failures": 0,
+   "findings": 0,
+   "anomalies": 0,
+   "elapsed": 1.0485846996307373,
+   "pass": true
+  },
+  {
+   "name": "philosophers_ordered",
+   "checks": {},
+   "schedules": 500,
+   "dfs_schedules": 300,
+   "spurious_runs": 0,
+   "failures": 0,
+   "findings": 0,
+   "anomalies": 0,
+   "elapsed": 1.0106430053710938,
+   "pass": true
+  },
+  {
+   "name": "init_once",
+   "checks": {},
+   "schedules": 428,
+   "dfs_schedules": 228,
+   "spurious_runs": 0,
+   "failures": 0,
+   "findings": 0,
+   "anomalies": 0,
+   "elapsed": 1.1292493343353271,
+   "pass": true
+  },
+  {
+   "name": "atomic_mp",
+   "checks": {},
+   "schedules": 218,
+   "dfs_schedules": 18,
+   "spurious_runs": 0,
+   "failures": 0,
+   "findings": 0,
+   "anomalies": 0,
+   "elapsed": 0.41240620613098145,
+   "pass": true
+  },
+  {
+   "name": "cpp_condvar_queue",
+   "checks": {},
+   "schedules": 600,
+   "dfs_schedules": 300,
+   "spurious_runs": 100,
+   "failures": 0,
+   "findings": 0,
+   "anomalies": 0,
+   "elapsed": 2.285958766937256,
+   "pass": true
+  }
+ ],
+ "all_passed": true,
+ "elapsed": 26.68100142478943
+}

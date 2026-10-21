@@ -1,0 +1,8 @@
+{"chronos_trace":1,"program":"lock_order_deadlock","strategy":"replay","seed":1,"threads":3,"steps":6,"objects":[{"id":0,"kind":"mutex","name":"A"},{"id":1,"kind":"mutex","name":"B"}]}
+{"i":0,"t":0,"k":0,"op":"create","o":-1,"a":1,"run":"1","hb":[]}
+{"i":1,"t":1,"k":0,"op":"start","o":-1,"a":0,"run":"3","hb":[0]}
+{"i":2,"t":0,"k":1,"op":"create","o":-1,"a":2,"run":"3","hb":[]}
+{"i":3,"t":2,"k":0,"op":"start","o":-1,"a":0,"run":"6","hb":[2]}
+{"i":4,"t":1,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[],"nm":"A"}
+{"i":5,"t":2,"k":1,"op":"mutex_lock","o":1,"a":0,"run":"6","hb":[],"nm":"B"}
+{"end":1,"result":{"chronos":1,"status":"failure","program":"lock_order_deadlock","strategy":"replay","seed":1,"steps":6,"threads":3,"switches":5,"preemptions":4,"failure":{"type":"DEADLOCK","signature":"DEADLOCK[join,mutex_lock,mutex_lock]","message":"no runnable thread; blocked: t0:join() t1:mutex_lock(B) t2:mutex_lock(A)","tid":2,"step":6,"file":"","line":0},"findings":[]}}

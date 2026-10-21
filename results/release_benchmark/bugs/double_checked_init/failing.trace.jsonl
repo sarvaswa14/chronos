@@ -1,0 +1,26 @@
+{"chronos_trace":1,"program":"double_checked_init","strategy":"replay","seed":1,"threads":3,"steps":24,"objects":[{"id":0,"kind":"mutex","name":"mutex#0"},{"id":1,"kind":"mutex","name":"mutex#1"}]}
+{"i":0,"t":0,"k":0,"op":"create","o":-1,"a":1,"run":"1","hb":[]}
+{"i":1,"t":1,"k":0,"op":"start","o":-1,"a":0,"run":"3","hb":[0]}
+{"i":2,"t":0,"k":1,"op":"create","o":-1,"a":2,"run":"3","hb":[]}
+{"i":3,"t":2,"k":0,"op":"start","o":-1,"a":0,"run":"6","hb":[2]}
+{"i":4,"t":2,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[],"nm":"mutex#0"}
+{"i":5,"t":2,"k":2,"op":"mutex_unlock","o":0,"a":0,"run":"4","hb":[],"nm":"mutex#0"}
+{"i":6,"t":2,"k":3,"op":"read","o":-1,"a":0,"run":"6","hb":[],"nm":"instance","f":"double_checked_init.c","l":19}
+{"i":7,"t":2,"k":4,"op":"mutex_lock","o":1,"a":0,"run":"6","hb":[],"nm":"mutex#1"}
+{"i":8,"t":2,"k":5,"op":"read","o":-1,"a":0,"run":"6","hb":[],"nm":"init_count","f":"double_checked_init.c","l":22}
+{"i":9,"t":2,"k":6,"op":"write","o":-1,"a":0,"run":"6","hb":[],"nm":"init_count","f":"double_checked_init.c","l":23}
+{"i":10,"t":1,"k":1,"op":"mutex_lock","o":0,"a":0,"run":"6","hb":[5],"nm":"mutex#0"}
+{"i":11,"t":1,"k":2,"op":"mutex_unlock","o":0,"a":0,"run":"6","hb":[],"nm":"mutex#0"}
+{"i":12,"t":1,"k":3,"op":"read","o":-1,"a":0,"run":"6","hb":[],"nm":"instance","f":"double_checked_init.c","l":19}
+{"i":13,"t":2,"k":7,"op":"write","o":-1,"a":0,"run":"4","hb":[],"nm":"instance","f":"double_checked_init.c","l":24}
+{"i":14,"t":2,"k":8,"op":"mutex_unlock","o":1,"a":0,"run":"4","hb":[],"nm":"mutex#1"}
+{"i":15,"t":1,"k":4,"op":"mutex_lock","o":1,"a":0,"run":"6","hb":[14],"nm":"mutex#1"}
+{"i":16,"t":2,"k":9,"op":"exit","o":-1,"a":0,"run":"6","hb":[]}
+{"i":17,"t":1,"k":5,"op":"read","o":-1,"a":0,"run":"2","hb":[],"nm":"init_count","f":"double_checked_init.c","l":22}
+{"i":18,"t":1,"k":6,"op":"write","o":-1,"a":0,"run":"2","hb":[],"nm":"init_count","f":"double_checked_init.c","l":23}
+{"i":19,"t":1,"k":7,"op":"write","o":-1,"a":0,"run":"2","hb":[],"nm":"instance","f":"double_checked_init.c","l":24}
+{"i":20,"t":1,"k":8,"op":"mutex_unlock","o":1,"a":0,"run":"2","hb":[],"nm":"mutex#1"}
+{"i":21,"t":1,"k":9,"op":"exit","o":-1,"a":0,"run":"2","hb":[]}
+{"i":22,"t":0,"k":2,"op":"join","o":-1,"a":1,"run":"1","hb":[21]}
+{"i":23,"t":0,"k":3,"op":"join","o":-1,"a":2,"run":"1","hb":[16]}
+{"end":1,"result":{"chronos":1,"status":"failure","program":"double_checked_init","strategy":"replay","seed":1,"steps":24,"threads":3,"switches":9,"preemptions":5,"failure":{"type":"ASSERT","signature":"ASSERT@double_checked_init.c:36","message":"assertion 'init_count == 1' failed: singleton initialised more than once","tid":0,"step":24,"file":"double_checked_init.c","line":36},"findings":[{"type":"RACE","signature":"RACE[instance@double_checked_init.c:19(R),instance@double_checked_init.c:24(W)]","message":"data race on 'instance': t1 read at double_checked_init.c:19 vs t2 write at double_checked_init.c:24 (no happens-before)","tid":2,"step":13,"file":"double_checked_init.c","line":24,"a":{"tid":1,"step":12,"write":false,"var":"instance","file":"double_checked_init.c","line":19},"b":{"tid":2,"step":13,"write":true,"var":"instance","file":"double_checked_init.c","line":24}}]}}

@@ -1,0 +1,123 @@
+{
+  "generated_unix": 1792563401.9943542,
+  "host": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "reps": 1,
+  "budget": 10,
+  "timeout": 20,
+  "manifest": "/mnt/data/chronos_release_work/Chronos/benchmarks/manifest.json",
+  "note": "Results are only for the listed local manifest cases; external SCTBench results require tools/sctbench.py.",
+  "cases": [
+    {
+      "name": "lost_update",
+      "oracle": "ASSERT@lost_update.c",
+      "runs": [
+        {
+          "rep": 0,
+          "strategy": "random",
+          "heuristic": null,
+          "found": true,
+          "schedules_to_failure_or_budget": 2,
+          "complete": null,
+          "wall_seconds": 0.0383,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "pct",
+          "heuristic": null,
+          "found": false,
+          "schedules_to_failure_or_budget": 10,
+          "complete": null,
+          "wall_seconds": 0.098,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "dfs",
+          "heuristic": null,
+          "found": false,
+          "schedules_to_failure_or_budget": 10,
+          "complete": false,
+          "wall_seconds": 0.1134,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "dpor",
+          "heuristic": "baseline",
+          "found": false,
+          "schedules_to_failure_or_budget": 10,
+          "complete": false,
+          "wall_seconds": 0.2386,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "dpor",
+          "heuristic": "risk",
+          "found": true,
+          "schedules_to_failure_or_budget": 2,
+          "complete": false,
+          "wall_seconds": 0.0183,
+          "anomalies": 0
+        }
+      ]
+    },
+    {
+      "name": "order_violation",
+      "oracle": "ASSERT@order_violation.c",
+      "runs": [
+        {
+          "rep": 0,
+          "strategy": "random",
+          "heuristic": null,
+          "found": true,
+          "schedules_to_failure_or_budget": 1,
+          "complete": null,
+          "wall_seconds": 0.0094,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "pct",
+          "heuristic": null,
+          "found": true,
+          "schedules_to_failure_or_budget": 1,
+          "complete": null,
+          "wall_seconds": 0.0128,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "dfs",
+          "heuristic": null,
+          "found": true,
+          "schedules_to_failure_or_budget": 2,
+          "complete": false,
+          "wall_seconds": 0.0139,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "dpor",
+          "heuristic": "baseline",
+          "found": true,
+          "schedules_to_failure_or_budget": 2,
+          "complete": false,
+          "wall_seconds": 0.0163,
+          "anomalies": 0
+        },
+        {
+          "rep": 0,
+          "strategy": "dpor",
+          "heuristic": "risk",
+          "found": true,
+          "schedules_to_failure_or_budget": 2,
+          "complete": false,
+          "wall_seconds": 0.0104,
+          "anomalies": 0
+        }
+      ]
+    }
+  ]
+}
